@@ -1,0 +1,60 @@
+# ═══════════════════════════════════════════════════════════════════════════
+# This directory IS the public repository: github.com/carnworkstudios/docforensics
+#
+# It is an allowlist, not an ignore list, and the difference is the whole
+# point. An ignore list fails open: the first time you drop a directory of
+# checkpoints or a scratch notebook in here, a list of things-to-exclude has
+# never heard of it and publishes it. Denying everything and naming what ships
+# fails closed instead — a new file is invisible until somebody adds a line.
+#
+
+# ── Then name what ships ───────────────────────────────────────────────────
+!/.gitignore
+!/.gitattributes
+!/README.md
+!/LICENSE.md
+!/CITATION.cff
+!/docs/
+!/examples/
+!/npm/
+!/python/
+
+# ── The push scripts stay local ────────────────────────────────────────────
+# They are the operator's tooling, not the product. The deny-all above already
+# excludes the root one; this catches the copies inside re-included
+# directories, where the allowlist has stopped protecting anything.
+**/push.sh
+
+# ── Weights are not in git ─────────────────────────────────────────────────
+# They live in ../huggingface/, so there is one file in the world with one
+# hash, which is what makes the compliance fingerprint mean anything.
+*.onnx
+*.onnx.data
+*.ort
+*.pt
+*.pth
+weights/
+
+# ── Build output and local noise ───────────────────────────────────────────
+node_modules/
+dist/
+build/
+*.tgz
+*.whl
+*.egg-info/
+__pycache__/
+*.pyc
+.DS_Store
+.env
+.env.*
+*.log
+
+# ── Never, under any circumstances ─────────────────────────────────────────
+# Listed even though the deny-all above already covers them, because a future
+# edit that re-includes a directory should still hit a wall here.
+**/token
+**/*.pem
+**/*.key
+.hf_token
+.npmrc
+.pypirc

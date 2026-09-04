@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+title: "docforensics-layout-s: document layout analysis for degraded pages"
+message: "If you use this model, please cite it."
+type: software
+authors:
+  - name: "Canworks, LLC"
+    alias: "Ginexys"
+    website: "https://ginexys.com"
+    email: "contact@ginexys.com"
+version: "1.0.0"
+date-released: 2026-09-01
+license: AGPL-3.0-or-later
+contact:
+  - name: "Ginexys, a d/b/a of Canworks, LLC"
+    email: "contact@ginexys.com"
+abstract: >
+  An 8.8 MB document layout detector for damaged, scanned and photographed
+  pages. Detects fifteen region types including form fields, and reports eight
+  page-condition signals. Reaches 0.449 mAP@50-95 on degraded scans where a
+  larger YOLOv8n baseline reaches 0.194.
+keywords:
+  - document layout analysis
+  - document forensics
+  - degraded documents
+  - form understanding

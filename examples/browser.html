@@ -1,0 +1,59 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>docforensics browser demo</title>
+<style>
+  body { font: 15px/1.6 system-ui, sans-serif; max-width: 900px; margin: 40px auto; padding: 0 20px }
+  canvas { border: 1px solid #ddd; max-width: 100%; margin-top: 16px }
+  #signals { font-family: ui-monospace, monospace; font-size: 13px; background: #f6f6f4;
+             padding: 12px; border-radius: 4px; margin-top: 14px }
+  .row { display: flex; gap: 20px; flex-wrap: wrap }
+</style>
+
+<h1>docforensics</h1>
+<p>Layout detection for scanned and damaged pages, running entirely in this tab.
+   Nothing is uploaded.</p>
+
+<input type="file" id="file" accept="image/*">
+<div class="row">
+  <canvas id="out"></canvas>
+  <div id="signals">load a page image</div>
+</div>
+
+<script type="module">
+import * as ort from 'https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/esm/ort.min.js';
+import { load, detect } from '../npm/src/index.js';
+
+const COLOURS = { text:'#3cb44b', heading:'#e6194b', list:'#ffe119', table:'#0082c8',
+  picture:'#f58231', caption:'#911eb4', field:'#3cdc5a', checkbox:'#e60000',
+  form:'#ff8c00', header:'#f032e6', footer:'#d2f53c' };
+
+const model = await load('docforensics-layout-s', ort);
+
+document.getElementById('file').onchange = async (e) => {
+  const img = new Image();
+  img.src = URL.createObjectURL(e.target.files[0]);
+  await img.decode();
+
+  const src = document.createElement('canvas');
+  src.width = img.width; src.height = img.height;
+  src.getContext('2d').drawImage(img, 0, 0);
+
+  const { regions, signals } = await detect(model, src);
+
+  const out = document.getElementById('out');
+  out.width = img.width; out.height = img.height;
+  const g = out.getContext('2d');
+  g.drawImage(img, 0, 0);
+  g.lineWidth = Math.max(2, img.width / 400);
+  g.font = `${Math.max(11, img.width / 70)}px sans-serif`;
+  for (const r of regions) {
+    g.strokeStyle = g.fillStyle = COLOURS[r.label] || '#888';
+    g.strokeRect(r.bbox.x, r.bbox.y, r.bbox.w, r.bbox.h);
+    g.fillText(`${r.label} ${r.score.toFixed(2)}`, r.bbox.x, r.bbox.y - 4);
+  }
+
+  document.getElementById('signals').textContent =
+    `${regions.length} regions\n\n` +
+    Object.entries(signals).map(([k, v]) => `${k.padEnd(12)} ${v.toFixed(3)}`).join('\n');
+};
+</script>
