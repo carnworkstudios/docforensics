@@ -16,7 +16,8 @@ pipeline_tag: object-detection
 # docforensics-layout-s
 
 A 8.8 MB document layout detector for **damaged, scanned and photographed pages**.
-Runs in a browser through onnxruntime-web, or anywhere ONNX runs. No GPU.
+Runs in a browser through onnxruntime-web, on a server through
+onnxruntime-node, or anywhere ONNX runs. No GPU.
 
 It detects fifteen region types including form fields and checkboxes, and it
 reports eight page-condition signals (blur, skew, tearing, bleed-through,
@@ -92,6 +93,26 @@ print(dict(zip(["skew","blur","noise","bleed","warp","tears","hand","native"],
 
 Outputs are YOLOv8-shaped on purpose, so any existing YOLOv8 decode and NMS
 works unchanged.
+
+## Node
+
+`detect()` takes a canvas or raw pixels, so a server needs no DOM shim:
+
+```js
+import { load, detect } from '@canwork/docforensics';
+import ort from 'onnxruntime-node';
+import sharp from 'sharp';
+
+const model = await load('docforensics-layout-s', ort);
+const { data, info } = await sharp('page.png')
+  .removeAlpha().raw().toBuffer({ resolveWithObject: true });
+const { regions, signals } = await detect(model, {
+  data, width: info.width, height: info.height,
+});
+```
+
+Node uses the CPU execution provider and is about three times faster than the
+browser's WebAssembly build. The output is identical either way.
 
 ## Inputs
 

@@ -14,7 +14,8 @@ on Hugging Face, so there is one file in the world with one hash.
 ## docforensics-layout-s
 
 A 8.8 MB document layout detector for **damaged, scanned and photographed pages**.
-Runs in a browser through onnxruntime-web, or anywhere ONNX runs. No GPU.
+Runs in a browser through onnxruntime-web, on a server through
+onnxruntime-node, or anywhere ONNX runs. No GPU.
 
 It detects fifteen region types including form fields and checkboxes, and it
 reports eight page-condition signals (blur, skew, tearing, bleed-through,

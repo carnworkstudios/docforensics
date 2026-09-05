@@ -1,6 +1,6 @@
 {
   "name": "@canwork/docforensics",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Document forensics models for scanned, photographed and damaged pages. Runs in the browser; weights fetch from Hugging Face.",
   "type": "module",
   "main": "src/index.js",
@@ -16,11 +16,13 @@
     "pdf",
     "document-ai",
     "forms",
-    "browser"
+    "browser",
+    "node"
   ],
   "license": "AGPL-3.0-or-later",
   "peerDependencies": {
-    "onnxruntime-web": "^1.17.0"
+    "onnxruntime-web": "^1.17.0",
+    "onnxruntime-node": "^1.17.0"
   },
   "repository": {
     "type": "git",
@@ -31,5 +33,16 @@
   "bugs": {
     "url": "https://github.com/carnworkstudios/docforensics/issues",
     "email": "contact@ginexys.com"
+  },
+  "peerDependenciesMeta": {
+    "onnxruntime-web": {
+      "optional": true
+    },
+    "onnxruntime-node": {
+      "optional": true
+    }
+  },
+  "scripts": {
+    "test": "node test/verify.mjs"
   }
 }

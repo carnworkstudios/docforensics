@@ -11,6 +11,7 @@
 # ── Then name what ships ───────────────────────────────────────────────────
 !/.gitignore
 !/.gitattributes
+!/.github/
 !/README.md
 !/LICENSE.md
 !/CITATION.cff
