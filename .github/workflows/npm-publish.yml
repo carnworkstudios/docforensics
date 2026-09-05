@@ -1,33 +1,3 @@
-# Publish @canwork/docforensics to npm when a GitHub release is created.
-#
-# NO TOKEN. This uses npm Trusted Publishing: GitHub mints a short-lived OIDC
-# token for this exact workflow, npm exchanges it for publish rights, and it
-# expires minutes later. There is no long-lived secret to leak, rotate, or
-# forget to expire, and nothing has to bypass your 2FA.
-#
-# WHY npmjs.org AND NOT GITHUB PACKAGES
-# GitHub Packages requires the npm scope to match the owning org, so this
-# package would have to be republished as @carnworkstudios/docforensics —
-# a second name for the same code. Worse, no public CDN serves GPR: the
-# `https://esm.sh/@canwork/docforensics` import in the browser example and on
-# the Hugging Face model card would keep resolving to the npmjs copy anyway.
-# One package, one name, one registry.
-#
-# WHAT YOU HAVE TO SET UP, ONCE
-#   npmjs.com → @canwork/docforensics → Settings → Trusted Publisher → GitHub
-#     Organization or user   carnworkstudios
-#     Repository             docforensics
-#     Workflow filename      npm-publish.yml
-#     Environment            (leave empty)
-# Nothing else. No secret, no NPM_TOKEN.
-#
-# HOW TO RELEASE
-#   1. Bump `version` in npm/package.json and push it.
-#   2. Releases → Draft a new release → tag `v1.1.0` → Publish.
-# npm refuses to overwrite a version that already exists, so the tag and the
-# package version must agree; the verify job checks that they do before
-# anything is published.
-
 name: npm publish
 
 on:
@@ -48,9 +18,6 @@ jobs:
         with:
           node-version: 22
 
-      # The package has no runtime dependencies, so there is no lockfile and
-      # `npm ci` would fail on its absence. onnxruntime-node is installed
-      # explicitly because the decode check needs a runtime to decode with.
       - run: npm install --no-save onnxruntime-node
 
       # A release tagged v1.2.0 that publishes 1.1.0 is the mistake this
@@ -82,13 +49,6 @@ jobs:
           node-version: 22
           registry-url: https://registry.npmjs.org
 
-      # Trusted publishing landed in npm 11.5.1. Node 22 ships npm 10, which
-      # would fall back to looking for a token that does not exist and fail
-      # with a bare 404 ENEEDAUTH. Upgrade first.
       - run: npm install -g npm@latest
       - run: npm --version
-
-      # No NODE_AUTH_TOKEN. Provenance is generated automatically when
-      # publishing this way, so --provenance is not passed either: npm rejects
-      # the flag as redundant under trusted publishing.
       - run: npm publish --access public
